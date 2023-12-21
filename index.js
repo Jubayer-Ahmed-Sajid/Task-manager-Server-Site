@@ -33,6 +33,10 @@ async function run() {
             const result = await todoCollection.insertOne(task)
             res.send(result)
         })
+        app.get('/todo', async(req,res)=>{
+            const result = await todoCollection.find().toArray()
+            res.send(result)
+        })
     } finally {
     }
 }
