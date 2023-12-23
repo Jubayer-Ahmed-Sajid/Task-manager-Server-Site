@@ -1,6 +1,6 @@
 const express = require('express')
 const app = express()
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const cors = require('cors')
 const port = process.env.PORT || 5000
 require('dotenv').config()
@@ -25,6 +25,8 @@ async function run() {
         // Connect the client to the server	(optional starting in v4.7)
         // Send a ping to confirm a successful connection
         const todoCollection = client.db('TaskDB').collection('todoList')
+        const onGoingCollection = client.db('TaskDB').collection('onGOingList')
+        const completedCollection = client.db('TaskDB').collection('completedList')
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
 
@@ -34,7 +36,29 @@ async function run() {
             res.send(result)
         })
         app.get('/todo', async(req,res)=>{
-            const result = await todoCollection.find().toArray()
+            const query = req.query
+            console.log('query email is',query)
+            const result = await todoCollection.find(query).toArray()
+            res.send(result)
+        })
+        app.patch('/todo/:id', async(req,res)=>{
+            const id = req.params
+            const updatedTask = req.body
+            console.log(id)
+            const query ={_id: new ObjectId(id)}
+            const updatedDoc = {
+                $set:{
+
+                    title:updatedTask.title,deadline:updatedTask.deadline,priority:updatedTask.priority,status:updatedTask.status
+                }
+            }
+            const result = await todoCollection.updateOne(query,updatedDoc)
+            res.send(result)
+        })
+        app.get('/todo/:id', async(req,res)=>{
+            const id = req.params
+            const query = { _id: new ObjectId (id)}
+            const result = await todoCollection.findOne(query)
             res.send(result)
         })
     } finally {
