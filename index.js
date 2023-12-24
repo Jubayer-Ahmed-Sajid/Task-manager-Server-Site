@@ -38,7 +38,7 @@ async function run() {
         app.get('/todo', async(req,res)=>{
             const query = req.query
             console.log('query email is',query)
-            const result = await todoCollection.find(query).toArray()
+            const result = await todoCollection.find(query).sort({ title: -1}).toArray()
             res.send(result)
         })
         app.patch('/todo/:id', async(req,res)=>{
