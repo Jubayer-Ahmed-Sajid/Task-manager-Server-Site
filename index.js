@@ -49,7 +49,11 @@ async function run() {
             const updatedDoc = {
                 $set:{
 
-                    title:updatedTask.title,deadline:updatedTask.deadline,priority:updatedTask.priority,status:updatedTask.status
+                    title:updatedTask.title,
+                    deadLine:updatedTask.deadLine,
+                    priority:updatedTask.priority,
+                    status:updatedTask.status,
+                    description: updatedTask.description
                 }
             }
             const result = await todoCollection.updateOne(query,updatedDoc)
@@ -59,6 +63,12 @@ async function run() {
             const id = req.params
             const query = { _id: new ObjectId (id)}
             const result = await todoCollection.findOne(query)
+            res.send(result)
+        })
+        app.delete('/todo/:id', async(req,res)=>{
+            const id = req.params
+            const query = { _id: new ObjectId (id)}
+            const result = await todoCollection.deleteOne(query)
             res.send(result)
         })
     } finally {
